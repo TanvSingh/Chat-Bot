@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Digital Tools Chatbot</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    #chatbox { max-width: 500px; margin: auto; background: white; padding: 15px; border-radius: 8px; }
+    .bubble { padding: 10px; border-radius: 10px; margin: 10px 0; }
+    .user { background: #d1e7dd; text-align: right; }
+    .bot { background: #e2e3e5; text-align: left; }
+    #inputArea { display: flex; margin-top: 10px; }
+    #message { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 10px 15px; margin-left: 5px; }
+  </style>
+</head>
+<body>
+  <div id="chatbox">
+    <h2>📱 Digital Help Chatbot</h2>
+    <div id="messages"></div>
+    <div id="inputArea">
+      <input type="text" id="message" placeholder="Ask something like 'How to use Google Maps?'" />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("message");
+      const msg = input.value;
+      if (!msg.trim()) return;
+
+      showMessage(msg, 'user');
+      input.value = "";
+
+      const res = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+      });
+
+      const data = await res.json();
+      showMessage(data.reply, 'bot');
+    }
+
+    function showMessage(text, sender) {
+      const div = document.createElement("div");
+      div.className = `bubble ${sender}`;
+      div.innerText = text;
+      document.getElementById("messages").appendChild(div);
+      div.scrollIntoView({ behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>
